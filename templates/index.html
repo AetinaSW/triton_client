@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<style>
+    h1, .title {
+        color: royalblue;
+    }
+    h3 {
+        color: #a8a8a8
+    }
+    form{
+        width:100%;
+    }
+
+    hr{
+        border: 0;
+        clear:both;
+        display:block;
+        width: 96%;               
+        height: 1px;
+        border-top: 1px solid rgb(219, 219, 219);
+    }
+    
+    .container{
+        font-family: Arial;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /*超過就換行*/
+        align-items:center; /*上下延伸對其*/
+        align-content:center;
+    }
+
+    .card{
+        margin: 20px;
+        padding: 10px;
+        width: 80%;
+        height: 80%;
+        max-width: 600px;
+        text-align: center;
+
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgba(204, 204, 204, 0.514);
+        border-radius: 10px;
+        box-shadow: 1px 1px 1px #999;
+    }
+
+    .flex-col{ flex-direction: column;}
+    
+    .flex-row{ flex-direction: row;}
+    
+    
+    .item-left{
+        margin: 5px;
+        width: 40%;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .item-right{
+        margin: 5px;
+        width: 40%;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .custom-select{
+        /*display: none; /*hide original SELECT element*/
+        width: 100%;
+        height: 30px;
+    }
+
+    .ip-box{
+        resize: none;
+        
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-top: 3%;
+        width: 100%;
+        height:30px;
+        vertical-align: middle;
+    }
+    
+    .btn{
+        font-family: Arial;
+        padding: 2%;
+        width: 20%; 
+        /* height: 30%;  */
+        margin: 2%; 
+        background-color: rgb(248, 56, 72); 
+        color: white;
+        cursor: pointer;
+    }
+
+    .info{
+        resize: none;
+        padding: 0px;
+        box-sizing: border-box;
+        width: 100%
+    }
+
+    .loader {
+        border: 6px solid #f3f3f3; /* Light grey */
+        border-top: 6px solid #db3434; /* Blue */
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+    }
+
+</style>
+
+<head>
+    
+    <!-- 抓到 JQuery 的函式庫，從網路上抓 -->
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- 如果要在 HTML 當中寫 JAVASCRIPT 就需要用 script 包住 -->
+    <script type="text/javascript">
+
+        // 設定根目錄
+        var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+        // 綁定事件，這個 ajax 的語法超醜，但沒辦法
+        $(document).ready(function(){
+            
+            // 選擇模型的事件
+            // #sel 代表 HTML 上的元件 ID 名為 sel，可以透過 id="sel" 去搜尋
+            // 當點擊 #sel 會發送一個 POST 到 app.py 的 _sel ，從 Flask 的修飾器去找
+            $("#sel").change(function(){
+                $.ajax({  
+                    type: 'POST',
+                    url: $SCRIPT_ROOT + '/_sel',
+                    data: JSON.stringify($( "#sel" ).val()),
+                    contentType: "application/json",
+                });
+            });
+            
+            // 選擇模式的事件，原理與上述相同
+            $("#mode-sel").change(function(){
+                $.ajax({
+                    type: 'POST',
+                    url: $SCRIPT_ROOT + '/_mode',
+                    data: JSON.stringify($("#mode-sel").val()),
+                    contentType: "application/json",
+                });
+            });
+
+            // loader 是當進行 Inference 的時候 會改成 尋轉用的 GIF
+            $("#loader").css("display","none");
+            
+            $("#bt_upload").click(function(){
+                $("#loader").css("display","block");
+                $("#bt_upload").text("LOADING");
+            });
+
+        });
+
+    </script>
+</head>
+<body>
+    <div class="container flex-col">
+        <div class="card">
+            <div class="container flex-col">
+                <form action="upload" method="post" enctype="multipart/form-data" id="sel_form" >
+                    <div class="title" >
+                        <h1 class="text-muted">Aetina Inference Server</h1>
+                        <h3 class="text-muted">AI application base on NVIDIA Triton Inference Server</h3>
+                    </div>
+                    <hr>
+                    <!-- 選擇模型 -->
+                    <div class="container flex-raw">
+                        <div class="item-left">AI Model</div>
+                        <div class='item-right'>
+                            <select name="myselect" class="custom-select" id="sel">  
+                                {% for model, info in models %}
+                                {% if model == 'default' %} 
+                                <option selected disabled value={{model}}>Select a model</option>
+                                {% else %}      
+                                <option value={{model}}>{{model.upper()}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>  
+                        </div>
+                    </div>
+
+                    <!-- 設定IP -->
+                    <div class="container flex_raw">
+                        <div class='item-left'>Server IP</div>
+                        <div class="item-right">
+                            <textarea name="ip" class="ip-box" contenteditable="true">172.23.70.81:8001</textarea>
+                        </div>
+                    </div>
+
+                    <!-- 設定模式 -->
+                    <div class="container flex_raw">
+                        <div class='item-left'>Infer Mode</div>
+                        <div class="item-right">
+                            <select id="mode-sel" class="custom-select" > 
+                                <option selected disabled>Select Mode</option>
+                                <option value='image'>IMAGE ( support multi files )</option>
+                                <option value='video'>VIDEO ( not support multi file )</option>
+                                <option value='stream'>STREAM ( not support multi file )</option>
+                                <option value="camera">CAMERA ( not support multi file )</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 選擇檔案 -->
+                    <div class="container   ">
+                        <div class='item-left'>Select File</div>
+                        <div class="item-right">
+                            <input id="upload_img" type="file" multiple="" name="file[]">
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- 提交 -->
+                    <button class="btn" id="bt_upload" >START</button>
+                    
+                </form>
+            </div>
+            <div class="container">
+                <div class="loader" id="loader"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

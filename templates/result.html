@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<head>
+    <!-- 讀不到css檔案 所以最後選擇直接寫在 HEAD 裡 -->
+    <style>
+        h1, h2 {
+            color: royalblue;
+        }
+        
+        hr{
+            border: 0;
+            clear:both;
+            display:block;
+            width: 96%;               
+            height: 1px;
+            border-top: 1px solid rgb(219, 219, 219);
+        }
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .container{
+            display: flex;
+            flex-direction: row;
+            justify-content:center;
+            /* align-content: center; */
+            /* align-items: center; */
+            align-content: stretch;
+            flex-wrap: wrap; /*超過就換行*/
+        }
+        .width30{
+            width: 30%;
+        }
+        .width40{
+            width:40%;
+        }
+        .width60{
+            width:60%;
+        }
+    
+        .card-container{
+            display: flex;
+            flex-direction: column;
+            
+            justify-content:space-between;
+            /* width: 30%; */
+            height: auto;
+            margin: 1%;
+            background-color: rgb(233, 233, 233);
+            
+            border: 1px solid rgba(204, 204, 204, 0.514);
+            border-radius: 10px;
+            box-shadow: 1px 1px 1px #999;
+        }
+    
+        .card-item{
+            width:100%;
+            margin: 2% 2%;
+        }
+    
+        .card-img{
+            width:96% ;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 1px 1px 1px #999;
+        }
+        .card-title{
+            font-size: 50px;
+            color: red;
+        }
+        .card-subtitle{
+            font-size: 18px;
+            color: gray;
+        }
+        
+        .card-info{
+            
+            resize: none;
+            width: 96%;
+            padding: 10px;
+            line-height: 1.5;
+    
+            box-sizing: border-box;        
+            border-radius: 5px;
+            border: 1px solid rgba(204, 204, 204, 0.514);
+            /* box-shadow: 1px 1px 1px #999; */
+            background-color: rgba(233, 233, 233, 0);
+    
+        }
+    
+        textarea::-webkit-scrollbar {
+            width: 6px;
+            background-color: #f5f5f500; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+            background-color: rgba(206, 206, 207, 0.158); 
+        }
+    
+    </style>
+</head>
+<body>
+    <div>
+        <!-- 標題 -->
+        <div class="header" align="center">
+            <h1 class="text-muted">Detected Results</h1>
+            <a>click on them to load/download them. </a><a href="/" style="color: rgb(61, 97, 255);">  ( back home )</a>
+        </div>
+        <hr/>
+        <!-- Flex容器 -->
+        <div class="container">
+            <!-- 使用 Jinja2 的方式 動態生成卡片式容器，低於3個 寬度設定成40%  -->
+            {% if mode=='image' %}
+            {% for out_name, info, img  in data %}
+            <div {% block wid %}{% if wid < 3 %} class="width40 card-container" {% else %} class="width30 card-container" {% endif %}{% endblock %} >
+                <!-- 圖片 -->
+                <div class="card-item">
+                    <img class="card-img" src="{{ img }}" alt=''/>
+                </div>
+                <!-- 辨識內容 -->
+                <div class="card-item">
+                    <textarea class="card-info" rows="3">{{info}}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+            {% elif mode=='video' %}
+            <div class="width60 card-container">
+                <div class="card-item">
+                    <video width="320" height="240" controls autoplay class="card-img">
+                        {% block out_pth%}
+                        <source src="{{ url_for('static', filename=out_pth) }}" type="video/mp4" />
+                        {% endblock %}
+                    </video>
+                    <div class="card-item">
+                        {% block info%}
+                        <textarea class="card-info" rows="3">{{info}}</textarea>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>    
+            {% else %}
+            <div class="width60 card-container" >
+                <!-- 圖片 -->
+                <div class="card-item">
+                    <img class="card-img" src="{{ url_for('feed_frame') }}" ismap/>
+                </div>
+                <!-- 辨識內容 -->
+                <div class="card-item">
+                    <textarea class="card-info" rows="3">Stream Mode</textarea>
+                </div>
+            </div>    
+            {% endif %}
+        </div>
+        <hr/>
+    </div>
+</body>
+</html>

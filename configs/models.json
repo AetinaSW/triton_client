@@ -1,0 +1,140 @@
+{  
+    "default": { 
+        "name":"default", 
+        "task": "classification",
+        "TAO": true,
+        "width":"e.g. 224, 416", 
+        "height":"e.g. 224, 416", 
+        "label":"The trainning dataset ( e.g. ImageNet, COCO, Custom )",
+        "option":{
+            "conf": 0.9,
+            "nms": 0.1,
+            "info": true,
+            "timeout": false,
+            "preprocess": "caffe"
+        }
+    },
+    "densenet_onnx":{ 
+        "name":"densenet_onnx", 
+        "task": "classification",
+        "TAO": false,
+        "width":224, 
+        "height":224, 
+        "label":"imagenet1000.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false,
+            "preprocess": "caffe"
+        }
+    },
+    "mask_classifier_resnet_50":{ 
+        "name":"mask_classifier_resnet_50", 
+        "task": "classification",
+        "TAO": true,
+        "width":224, 
+        "height":224, 
+        "label":"max.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false,
+            "preprocess": "caffe"
+        }
+    },
+    "yolov4":{ 
+        "name":"yolov4", 
+        "task": "objected_detection",
+        "TAO": false,
+        "width":608, 
+        "height":608, 
+        "label":"coco80.txt",
+        "option":{
+            "conf": 0.9,
+            "nms": 0.1,
+            "info": true,
+            "timeout": false,
+            "preprocess": "caffe"
+        }
+    },        
+    "yolov4_will":{ 
+        "name":"yolov4_will", 
+        "task": "objected_detection",
+        "TAO": false,
+        "width":608, 
+        "height":608, 
+        "label":"will3.txt",
+        "option":{
+            "conf": 0.9,
+            "nms": 0.1,
+            "info": true,
+            "timeout": false,
+            "preprocess": "caffe"
+        }
+    },
+    "usb_detector_for_innodisk":{ 
+        "name":"usb_detector_for_innodisk", 
+        "task": "objected_detection",
+        "TAO": true,
+        "width":608, 
+        "height":608, 
+        "label":"usb_innodisk.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false
+        }
+    },
+    "eye_glass":{ 
+        "name":"eye_glass", 
+        "task": "objected_detection",
+        "TAO": true,
+        "width":224, 
+        "height":224, 
+        "label":"eyeglass.txt",
+        "option":{
+            "conf": 0.7,
+            "info": true,
+            "timeout": false
+        }
+    },
+    "mask":{ 
+        "name":"mask", 
+        "task": "objected_detection",
+        "TAO": true,
+        "width":224, 
+        "height":224, 
+        "label":"model_output_labels.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false
+        }
+    },
+    "poeplenet":{ 
+        "name":"peoplenet", 
+        "task": "objected_detection",
+        "TAO": true,
+        "width":960, 
+        "height":544, 
+        "label":"poeple.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false
+        }
+    },
+    "DashCamNet":{ 
+        "name":"DashCamNet", 
+        "task": "objected_detection",
+        "TAO": true,
+        "width":960, 
+        "height":544, 
+        "label":"DashCamNet.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false
+        }
+    }
+}
