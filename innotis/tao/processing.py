@@ -118,6 +118,8 @@ def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape
     """
     model_h = 544
     model_w = 960
+    img_w = image_shape[1]
+    img_h = image_shape[0]
     stride = 16
     box_norm = 35.0
     grid_h = int(model_h / stride)
@@ -138,8 +140,8 @@ def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape
     bbs = []
     class_ids = []
     scores = []
-    
-
+    print("grid_h:", grid_h)
+    print("grid_w:", grid_w)
     for c in analysis_classes:
     
         x1_idx = c * 4 * grid_size
@@ -147,8 +149,9 @@ def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape
         x2_idx = y1_idx + grid_size
         y2_idx = x2_idx + grid_size
         boxes = outputs[0]
+        
         for h in range(grid_h):
-    
+            
             for w in range(grid_w):
     
                 i = w + h * grid_w
@@ -164,29 +167,41 @@ def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape
     
                     o1, o2, o3, o4 = applyBoxNorm(o1, o2, o3, o4, w, h, grid_centers_w, grid_centers_h, box_norm)
 
-                    # try:    
-                    #     w, h= image_shape
-                    #     scale = int(w)/int(model_w)
-                    #     # scale = 1
-                    # except Exception as e:
-                    #     logging.error(e)
-                    # logging.debug(type(image_shape))
-                    # w, h = image_shape[0],  image_shape[1]
-                    # logging.debug((w,h))
 
-                    scale = 1
+                    logging.info('before image_shape')
+                    
+                    scale_x = int(img_w)/int(model_w)
+                    scale_y = int(img_h)/int(model_h)
+                    # print("scale:",scale)
+                    logging.debug(image_shape)
 
-                    xmin = int(scale*o1)
-                    ymin = int(scale*o2)
-                    xmax = int(scale*o3)
-                    ymax = int(scale*o4)
+                    # scale = 2
+
+                    # scale_x = scale
+                    # scale_y = scale
+                    
+                    logging.info('before scale')
+                    print("scale_x:", scale_x)
+                    print("scale_y:", scale_y)
+                    # print("scale_x:",scale_x)
+                    # print("o1:", o1)
+                    # print("scale_x*o1:", scale_x*o1)
+                    xmin = int(scale_x*o1)
+                    ymin = int(scale_y*o2)
+                    xmax = int(scale_x*o3)
+                    ymax = int(scale_y*o4)
+                    print("xmin:", xmin, type(xmin))
+                    print("ymin:", ymin, type( ymin))
+                    print("xmax:", xmax, type(xmax))
+                    print("ymax:", ymax, type(ymax))
+
 
                     if wh_format:
                         bbs.append([xmin, ymin, xmax - xmin, ymax - ymin])
                     else:
                         bbs.append([xmin, ymin, xmax, ymax])
-    
+                    
                     class_ids.append(c)
                     scores.append(float(score))
-    
+
     return bbs, class_ids, scores

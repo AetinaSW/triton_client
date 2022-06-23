@@ -313,7 +313,7 @@ class Client:
                 detected_objects = self.postp(  outputs= [detection_out, keepCount_out], 
                                                                                 min_confidence=thres, 
                                                                                 analysis_classes=list(range(NUM_CLASSES)),
-                                                                                image_shape=(width, height) )
+                                                                                image_shape=image.shape )
             else:
                 logging.info(f"The objected detection model from TAO.")
                 
@@ -475,12 +475,13 @@ class Client:
                         elif 'DashCamNet' in self.model_info['name']:
                             NUM_CLASSES = 4
                         # outputs, min_confidence, analysis_classes, image_shape
+                        print("frame.shape:", frame.shape)
                         detected_objects = self.postp( 
                             outputs = [detection_out, keepCount_out], 
                             min_confidence = thres, 
                             analysis_classes= list(range(NUM_CLASSES)), 
-                            image_shape = (width, height) )
-
+                            image_shape = frame.shape )
+                        logging.info('out')
                         image_draw = frame.copy()
                     
                         bboxes, class_ids, scores = detected_objects
