@@ -12,6 +12,7 @@ import tritonclient.grpc as grpcclient
 from tritonclient.utils import InferenceServerException
 
 from innotis.common.render import render_dets
+import time
 
 class Client:
     # -----------------------------------------------------------------------------------------------------------------------------
@@ -268,9 +269,12 @@ class Client:
         # ---------------------------------------------------------------------------------
         # Do inference
         logging.info("Invoking inference...")
+        t1 = time.time()
         results = self.triton_client.infer( model_name=self.model,
                                             inputs=inputs,
                                             outputs=outputs )
+        t2 = time.time()
+        infer_time = t2 - t1
         if self.get_info: self.get_infer_stats()  # 取得訓練的狀態，太多直接註解掉
         # print('results:', results)
 
@@ -341,7 +345,7 @@ class Client:
                             color = [0, 0, 255]
                         if not class_id:
                             cv2.rectangle(image_draw, (xmin, ymin), (xmin + w, ymin + h), color, 2)
-                        parsed_results = None
+                        parsed_results =  "inference time : {} \n fps : {}". format(str(infer_time), str(1/infer_time))
                 else:
                     logging.info('nothing')
                     image_draw = image_draw
@@ -422,6 +426,7 @@ class Client:
         # Start stream and inference
         logging.info("Invoking inference...")
         t_start = time.time()
+        infer_time = 0
         while cap.isOpened():
             
             # ---------------------------------------------------------------------------------
@@ -440,10 +445,12 @@ class Client:
 
             # ---------------------------------------------------------------------------------
             # Do inference
+            t1 = time.time()
             results = self.triton_client.infer(model_name=self.model,
                                     inputs=inputs,
                                     outputs=outputs)
-
+            t2 = time.time()
+            infer_time = infer_time + (t2 - t1)
             # ---------------------------------------------------------------------------------
             # Parsing result
             # logging.info("Parsing Results...")
@@ -454,7 +461,7 @@ class Client:
             # 如果是物件辨識的話，由於已經在載入模型的時候區分好不同的平台(darknet, TAO)，所以使用相同的程式碼即可。
             
             if 'object' in self.model_info['task']:
-
+                counter = counter + 1
                 try:
 
                     if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name']:
@@ -507,10 +514,7 @@ class Client:
                             parsed_results = None                
                     else:
                     
-                        detected_objects = self.postp(result, frame.shape[1], frame.shape[0], [width, height], self.confidence, self.nms, "peoplenet")
-                    
-                        counter += 1
-                        
+                        detected_objects = self.postp(result, frame.shape[1], frame.shape[0], [width, height], self.confidence, self.nms, "peoplenet")         
                         results, image_draw = render_dets(frame.copy(), self.label, detected_objects)
                 except Exception as e:
                     exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -538,8 +542,9 @@ class Client:
 
         info =  f'Video Mode \n'+\
                 f'Video Length: {vlegnth:.3f}s\n'+\
-                f'Cost Time: {t_infer:.3f}s'
-        
+                f'Cost Time: {t_infer:.3f}s\n'+\
+                f'average inference time: {(infer_time/counter):.3f}s\n'+\
+                f'average fps: {(counter/infer_time):.3f}'        
         logging.info("All Done")
         return True, info
     # -----------------------------------------------------------------------------------------------------------------------------
