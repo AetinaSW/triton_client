@@ -116,9 +116,6 @@ def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape
         analysis_classes (list of int): indices of the classes to consider
     Returns: list of list tuple: each element is a two list tuple (x, y) representing the corners of a bb
     """
-    print("in post")
-    # model_h = 544
-    # model_w = 960
     model_h = model_shape[0]
     model_w = model_shape[1]
     img_w = image_shape[1]
