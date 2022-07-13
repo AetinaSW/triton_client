@@ -107,7 +107,7 @@ def applyBoxNorm(o1, o2, o3, o4, x, y, grid_centers_w, grid_centers_h, box_norm)
     o4 = (o4 + grid_centers_h[y]) * box_norm
     return o1, o2, o3, o4
 
-def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape, wh_format=True):
+def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape, model_shape, wh_format=True):
     """
     Postprocesses the inference output
     Args:
@@ -116,8 +116,11 @@ def peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape
         analysis_classes (list of int): indices of the classes to consider
     Returns: list of list tuple: each element is a two list tuple (x, y) representing the corners of a bb
     """
-    model_h = 544
-    model_w = 960
+    print("in post")
+    # model_h = 544
+    # model_w = 960
+    model_h = model_shape[0]
+    model_w = model_shape[1]
     img_w = image_shape[1]
     img_h = image_shape[0]
     stride = 16

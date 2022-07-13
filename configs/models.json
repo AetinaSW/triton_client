@@ -136,5 +136,18 @@
             "info": true,
             "timeout": false
         }
+    },
+    "LPDNet":{ 
+        "name":"LPDNet", 
+        "task": "objected_detection",
+        "TAO": true,
+        "width":640, 
+        "height":480, 
+        "label":"usa_lpd_label.txt",
+        "option":{
+            "conf": 0.9,
+            "info": true,
+            "timeout": false
+        }
     }
 }

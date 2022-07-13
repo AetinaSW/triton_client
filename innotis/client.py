@@ -53,7 +53,7 @@ class Client:
             logging.info('Load other module')
             import innotis.default.processing as proc
         
-        if 'peoplenet' in model_info['name'] or 'DashCamNet' in model_info['name']:
+        if 'peoplenet' in model_info['name'] or 'DashCamNet' in model_info['name'] or 'LPDNet' in model_info['name']:
             import innotis.tao.processing as proc
             logging.debug("Using DetectNet_v2 Preprocess ...")
             self.prep = proc.peoplenet_process_image
@@ -296,7 +296,7 @@ class Client:
             logging.warning('Object Detection')
             thres = 0.15
 
-            if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name']:
+            if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name'] or 'LPDNet' in self.model_info['name']:
                 
                 logging.warning('DetectNet_v2')
                 detection_out, keepCount_out = result[0], result[1]
@@ -313,11 +313,19 @@ class Client:
                     NUM_CLASSES = 2
                 elif 'DashCamNet' in self.model_info['name']:
                     NUM_CLASSES = 4
-                    # peoplenet_postprocess(outputs, min_confidence, analysis_classes, image_shape, wh_format
+                elif 'LPDNet' in self.model_info['name']:
+                    NUM_CLASSES = 1
+                print("haha")
                 detected_objects = self.postp(  outputs= [detection_out, keepCount_out], 
                                                                                 min_confidence=thres, 
                                                                                 analysis_classes=list(range(NUM_CLASSES)),
-                                                                                image_shape=image.shape )
+                                                                                image_shape = image.shape,
+                                                                                model_shape = [height, width] )
+                # detected_objects = self.postp(  outputs= [detection_out, keepCount_out], 
+                #                                                                 min_confidence=thres, 
+                #                                                                 analysis_classes=list(range(NUM_CLASSES)),
+                #                                                                 image_shape = image.shape )
+                print("done")
             else:
                 logging.info(f"The objected detection model from TAO.")
                 
@@ -326,7 +334,7 @@ class Client:
 
             logging.warning('After Post process')
             
-            if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name']:
+            if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name'] or 'LPDNet' in self.model_info['name']:
                 image_draw = image.copy()
                 
                 bboxes, class_ids, scores = detected_objects
@@ -464,7 +472,7 @@ class Client:
                 counter = counter + 1
                 try:
 
-                    if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name']:
+                    if 'peoplenet' in self.model_info['name'] or 'DashCamNet' in self.model_info['name'] or 'LPDNet' in self.model_info['name']:
                     
                         logging.warning('DetectNet_v2')
                         detection_out, keepCount_out = result[0], result[1]
@@ -481,13 +489,20 @@ class Client:
                             NUM_CLASSES = 2
                         elif 'DashCamNet' in self.model_info['name']:
                             NUM_CLASSES = 4
+                        elif 'LPDNet' in self.model_info['name']:
+                            NUM_CLASSES = 1
                         # outputs, min_confidence, analysis_classes, image_shape
                         print("frame.shape:", frame.shape)
                         detected_objects = self.postp( 
                             outputs = [detection_out, keepCount_out], 
                             min_confidence = thres, 
                             analysis_classes= list(range(NUM_CLASSES)), 
-                            image_shape = frame.shape )
+                            image_shape = frame.shape,
+                            model_shape = [height, width] )
+                        # detected_objects = self.postp(  outputs= [detection_out, keepCount_out], 
+                        #                                                         min_confidence=thres, 
+                        #                                                         analysis_classes=list(range(NUM_CLASSES)),
+                        #                                                         image_shape = frame.shape)
                         logging.info('out')
                         image_draw = frame.copy()
                     
