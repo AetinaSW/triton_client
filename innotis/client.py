@@ -315,7 +315,6 @@ class Client:
                     NUM_CLASSES = 4
                 elif 'LPDNet' in self.model_info['name']:
                     NUM_CLASSES = 1
-                print("haha")
                 detected_objects = self.postp(  outputs= [detection_out, keepCount_out], 
                                                                                 min_confidence=thres, 
                                                                                 analysis_classes=list(range(NUM_CLASSES)),
@@ -325,7 +324,6 @@ class Client:
                 #                                                                 min_confidence=thres, 
                 #                                                                 analysis_classes=list(range(NUM_CLASSES)),
                 #                                                                 image_shape = image.shape )
-                print("done")
             else:
                 logging.info(f"The objected detection model from TAO.")
                 
