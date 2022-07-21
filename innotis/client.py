@@ -527,7 +527,7 @@ class Client:
                             parsed_results = None                
                     else:
                     
-                        detected_objects = self.postp(result, frame.shape[1], frame.shape[0], [width, height], self.confidence, self.nms, "peoplenet")         
+                        detected_objects = self.postp(result, frame.shape[1], frame.shape[0], [width, height], self.confidence, self.nms)         
                         results, image_draw = render_dets(frame.copy(), self.label, detected_objects)
                 except Exception as e:
                     exc_type, exc_obj, exc_tb = sys.exc_info()
